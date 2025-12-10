@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "865816614212",
+    "project_id": "olivia-cfd34",
+    "storage_bucket": "olivia-cfd34.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865816614212:android:fd3dd2a43ac1a2351ff311",
+        "android_client_info": {
+          "package_name": "com.olivia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPihMlZ6295W0YNlIzDLqD795IumyAmP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
