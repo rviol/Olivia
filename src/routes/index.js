@@ -18,9 +18,10 @@ function Routes() {
 
     // Se estiver logado (signed), mostra a Home.
     // Se não, mostra o fluxo de Login/Cadastro (AuthRoutes).
-    return (
-        signed ? <Home /> : <AuthRoutes />
-    )
+     //return (
+     //    signed ? <AppRoutes /> : <AuthRoutes />
+   //)
+   return <Home />;
 }
 
 export default Routes;

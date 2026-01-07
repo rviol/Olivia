@@ -12,13 +12,13 @@ function AuthProvider({ children }){
   const navigation = useNavigation();
 
 
-  async function signUp(email, password, nome){
+  async function signUp(nome,email, password){
     setLoadingAuth(true);
     try{
       const response = await api.post('/users', {
        name: nome,
-       password: password,
        email: email,
+       password: password,
       })
       setLoadingAuth(false);
       navigation.goBack();
