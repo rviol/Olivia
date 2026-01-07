@@ -1,38 +1,36 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 
-const AuthStack = createNativeStackNavigator(); 
+const Stack = createNativeStackNavigator();
 
-function AuthRoutes() {
-    return (
-        <AuthStack.Navigator>
-            <AuthStack.Screen
-                name="SignIn"
-                component={SignIn} 
-                options={{headerShown: false,}}
-            />
-                
-            <AuthStack.Screen
-                name="SignUp"
-                component={SignUp}
-                options={{
-                        headerStyle:{
-                        backgroundColor: '#c77df5ff', 
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#8B008B'},
-
-                        headerTintColor: '#fff', 
-                        headerTitleAlign: 'center',
-                        headerTitle: 'Cadastre-se',
-                    }}
-            />
-        
-        </AuthStack.Navigator>      
-    )
+function AuthRoutes(){
+  return(
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="SignIn" 
+        component={SignIn} 
+        options={{ headerShown: false }} 
+      />
+      
+      <Stack.Screen 
+        name="SignUp" 
+        component={SignUp} 
+        options={{ 
+          headerStyle:{
+            backgroundColor: '#3b3dbf', 
+            borderBottomWidth: 1, 
+            borderBottomColor: '#00b94a' 
+          },
+          headerTintColor: '#FFF', 
+          headerBackTitleVisible: false, 
+          headerTitle: 'Voltar'
+        }} 
+      />
+    </Stack.Navigator>
+  )
 }
+
 export default AuthRoutes;
-
-

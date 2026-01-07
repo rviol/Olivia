@@ -3,12 +3,12 @@ import { Platform } from 'react-native';
 
 // Definindo a paleta de cores
 const COLORS = {
-  background: '#F8F0FB', // Lilás clarinho fundo
-  primaryDark: '#9B80AC', // Roxo para títulos
-  textSecondary: '#7A6E80', // Cinza/Roxo para textos secundários
-  cardBg: '#FFFFFF',      // Fundo branco do card
-  inputBg: '#F3E5F5',     // Fundo bem clarinho para os inputs
-  buttonPink: '#FF9EB5',  // Rosa do botão principal
+  background: '#F8F0FB', 
+  primaryDark: '#9B80AC', 
+  textSecondary: '#7A6E80',
+  cardBg: '#FFFFFF',      
+  inputBg: '#F3E5F5',     
+  buttonPink: '#FF9EB5',  
   buttonText: '#FFFFFF',
 };
 

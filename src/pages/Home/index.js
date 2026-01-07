@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -16,33 +16,32 @@ import type { CameraOptions } from 'react-native-image-picker';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import RNFS from 'react-native-fs';
 
-// Definindo a paleta de cores "fofa" e padronizada
+import { AuthContext } from '../../contexts/auth';
+
 const COLORS = {
-  background: '#F8F0FB', // Lilás clarinho para o fundo
-  primary: '#9B80AC',    // Roxo suave para títulos
-  button: '#FF9EB5',     // Rosa acolhedor para o botão principal
+  background: '#F8F0FB', 
+  primary: '#9B80AC',  
+  button: '#FF9EB5',     
   buttonText: '#FFFFFF',
   cardBg: '#FFFFFF',
-  textDark: '#5A4D61',   // Cinza escuro para texto corrido
-  accent: '#FFC1E3',     // Rosa claro para detalhes
-  success: '#81C784',    // Verde suave para o botão "Entendi"
+  textDark: '#5A4D61',  
+  accent: '#FFC1E3',   
+  success: '#81C784',   
 };
 
 const Home = () => {
+  const { signOut } = useContext(AuthContext);
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // Função para mostrar notificação com Notifee
   const showNotification = async () => {
-    // Criar canal de notificação (Android)
     const channelId = await notifee.createChannel({
       id: 'olivia_instructions',
       name: 'Instruções de Gravação',
       importance: AndroidImportance.HIGH,
     });
 
-    // Exibir notificação
     await notifee.displayNotification({
-      title: '📋 Orientações de Gravação',
+      title: 'Orientações de Gravação',
       body: 'Cubra a câmera traseira e o flash completamente com o dedo. Aguarde 30s. A tela deve ficar avermelhada durante a gravação.',
       android: {
         channelId,
@@ -57,30 +56,24 @@ const Home = () => {
     });
   };
 
-  // Função para abrir modal de instruções
   const handleBeginFlow = async () => {
-    // Mostrar notificação
     await showNotification();
-    
-    // Mostrar modal também
     setShowInstructions(true);
   };
 
-  // Quando o botão "Entendi" é clicado, começa a gravar
   const handleUnderstood = () => {
     setShowInstructions(false);
     startRecording();
   };
 
-  // Inicia a gravação do vídeo
   const startRecording = () => {
     const options: CameraOptions = {
       mediaType: 'video',
       videoQuality: 'high',
-      durationLimit: 30, // Limite de 30 segundos
-      saveToPhotos: false, // NÃO salva na galeria (vamos salvar em pasta específica)
-      cameraType: 'back', // Câmera traseira
-      includeBase64: false, // Não precisa de base64 por enquanto (economiza memória)
+      durationLimit: 30,
+      saveToPhotos: false,
+      cameraType: 'back',
+      includeBase64: false,
     };
 
     launchCamera(options, async (response) => {
@@ -90,8 +83,6 @@ const Home = () => {
         Alert.alert('Erro', `Erro ao gravar: ${response.errorMessage}`);
       } else if (response.assets && response.assets.length > 0) {
         const video = response.assets[0];
-        
-        // Salvar vídeo em pasta específica
         try {
           await saveVideoToFolder(video.uri);
         } catch (error) {
@@ -102,45 +93,36 @@ const Home = () => {
     });
   };
 
-  // Salvar vídeo em pasta específica do app
   const saveVideoToFolder = async (videoUri: string) => {
     try {
-      // Pasta privada do app (NÃO aparece na galeria)
-      // Android: /data/data/com.olivia/files/Videos
-      // iOS: Library/Application Support/Videos
       const folderPath = `${RNFS.DocumentDirectoryPath}/Videos`;
-      
       const folderExists = await RNFS.exists(folderPath);
       
       if (!folderExists) {
         await RNFS.mkdir(folderPath);
-        console.log('📁 Pasta Videos criada:', folderPath);
+        console.log('Pasta Videos criada:', folderPath);
       }
 
-      // Gerar nome único para o vídeo com timestamp
       const timestamp = new Date().getTime();
-      const dateStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      const dateStr = new Date().toISOString().split('T')[0];
       const fileName = `olivia_${dateStr}_${timestamp}.mp4`;
       const destPath = `${folderPath}/${fileName}`;
 
-      // Copiar vídeo para a pasta
       await RNFS.copyFile(videoUri, destPath);
       
-      console.log('✅ Vídeo salvo em:', destPath);
+      console.log('Vídeo salvo em:', destPath);
       
-      // Obter informações do arquivo
       const fileInfo = await RNFS.stat(destPath);
       
       Alert.alert(
-        'Sucesso! 🎉',
-        `Vídeo salvo no app!\n\n📄 Arquivo: ${fileName}\n💾 Tamanho: ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB\n\n⚠️ O vídeo NÃO foi salvo na galeria.`
+        'Sucesso!',
+        `Vídeo salvo no app!\n\nArquivo: ${fileName}\n Tamanho: ${(fileInfo.size / 1024 / 1024).toFixed(2)}MB\n\n O vídeo NÃO foi salvo na galeria.`
       );
 
-      // Retornar o caminho para uso posterior
       return destPath;
       
     } catch (error) {
-      console.error('❌ Erro ao salvar vídeo:', error);
+      console.error(' Erro ao salvar vídeo:', error);
       throw error;
     }
   };
@@ -149,13 +131,22 @@ const Home = () => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
       <View style={styles.container}>
-        
-        {/* CABEÇALHO COM A PERSONAGEM OLIVIA */}
+
+        <View style={styles.topBar}>
+          <TouchableOpacity 
+            style={styles.logoutButton} 
+            onPress={signOut}
+            activeOpacity={0.6}
+          >
+            <Text style={styles.logoutText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
+
+
         <View style={styles.headerContainer}>
           <Text style={styles.greetingText}>Olá! Eu sou a Olivia.</Text>
           <Text style={styles.subText}>Vamos verificar como você está?</Text>
           
-          {/* CAMINHO CORRIGIDO BASEADO NA SUA ESTRUTURA DE PASTAS */}
           <Image
             source={require('../../assests/image3.png')}
             style={styles.charImage}
@@ -163,11 +154,10 @@ const Home = () => {
           />
         </View>
 
-        {/* CARD DE INSTRUÇÕES VISUAIS */}
+
         <View style={styles.cardContainer}>
           <Text style={styles.cardTitle}>Como funciona a medição:</Text>
           
-          {/* Passos Visuais */}
           <View style={styles.stepItem}>
             <View style={styles.stepNumberBox}><Text style={styles.stepNumber}>1</Text></View>
             <Text style={styles.stepText}>Vá para um local iluminado.</Text>
@@ -184,7 +174,7 @@ const Home = () => {
           </View>
         </View>
 
-        {/* BOTÃO PRINCIPAL */}
+
         <View style={styles.footerContainer}>
           <TouchableOpacity
             style={styles.mainButton}
@@ -195,7 +185,7 @@ const Home = () => {
           </TouchableOpacity>
         </View>
 
-        {/* MODAL DE CONFIRMAÇÃO */}
+
         <Modal
           visible={showInstructions}
           transparent={true}
@@ -209,9 +199,9 @@ const Home = () => {
               <Text style={styles.modalText}>
                 Ao clicar em "Entendi", a câmera abrirá.
                 {'\n\n'}
-                💡 Ligue o flash do seu dispositivo. Mantenha o dedo cobrindo a lente até o fim dos 30 segundos.
+                Ligue o flash do seu dispositivo. Mantenha o dedo cobrindo a lente até o fim dos 30 segundos.
                 {'\n\n'}
-                A gravação começará automaticamente!
+                Não se esqueça de começar a gravação!
               </Text>
               <TouchableOpacity
                 style={styles.understoodButton}
@@ -239,10 +229,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: Platform.OS === 'android' ? 24 : 0,
   },
-  // --- Estilos do Cabeçalho e Imagem ---
+  
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end', 
+    marginTop: 20, 
+    marginBottom: -50, 
+    zIndex: 10,
+  },
+  logoutButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: COLORS.primary, 
+    backgroundColor: 'transparent',
+  },
+  logoutText: {
+    color: COLORS.primary,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+
   headerContainer: {
     alignItems: 'center',
-    marginTop: Platform.OS === 'android' ? 70 : 70,
+    marginTop: Platform.OS === 'android' ? 70 : 70, 
     marginBottom: 10,
   },
   greetingText: {
@@ -266,7 +277,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.accent,
     backgroundColor: 'transparent', 
   },
-  // --- Estilos do Card de Instruções ---
+
   cardContainer: {
     backgroundColor: COLORS.cardBg,
     borderRadius: 25,
@@ -393,12 +404,3 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
-
-
-/*
-# Listar vídeos
-adb shell ls /data/data/com.olivia/files/Videos/
-
-# Copiar vídeo para o computador
-adb pull /data/data/com.olivia/files/Videos/olivia_2025-12-10_1733865432123.mp4
- */

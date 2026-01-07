@@ -1,27 +1,25 @@
-import React, { useContext } from "react";
-import { View, ActivityIndicator } from "react-native";
+import React, { useContext } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 
-import AuthRoutes from "./auth.routes"; // Suas rotas antigas de Login/Cadastro
-import Home from "../pages/Home";       // A nova tela Home
-import { AuthContext } from "../contexts/auth";
+import { AuthContext } from '../contexts/auth';
 
-function Routes() { 
-    const { signed, loading } = useContext(AuthContext);
+import AuthRoutes from './auth.routes';
+import AppRoutes from './app.routes';
 
-    if(loading){
-        return(
-            <View style={{flex:1, justifyContent:'center', alignItems:'center', backgroundColor: '#c77df5ff'}}>
-                <ActivityIndicator size={50} color="#121212" />
-            </View>
-        )
-    }
+function Routes(){
+  const { signed, loading } = useContext(AuthContext);
 
-    // Se estiver logado (signed), mostra a Home.
-    // Se não, mostra o fluxo de Login/Cadastro (AuthRoutes).
-     //return (
-     //    signed ? <AppRoutes /> : <AuthRoutes />
-   //)
-   return <Home />;
+  if(loading){
+    return(
+      <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#131313" />
+      </View>
+    )
+  }
+
+  return(
+    signed ? <AppRoutes/> : <AuthRoutes/>
+  )
 }
 
 export default Routes;
